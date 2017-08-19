@@ -147,35 +147,194 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-Kubernetes" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/19/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2017/08/19/hello-world/" class="archive-article-date">
-  	<time datetime="2017-08-19T09:30:56.447Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-19</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+        <ol>
+<li>主机</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>hostname</th>
+<th>角色</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>192.168.111.6</td>
+<td>k8s-1</td>
+<td>master</td>
+<td>etcd、kube-apiserver、kube-scheduler、kube-controller-manager</td>
+</tr>
+<tr>
+<td>192.168.111.7</td>
+<td>k8s-2</td>
+<td>minion</td>
+<td>etcd、docker、kube-proxy、kubelet、flannel</td>
+</tr>
+<tr>
+<td>192.168.111.8</td>
+<td>k8s-2</td>
+<td>minion</td>
+<td>etcd、docker、kube-proxy、kubelet、flannel</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>准备</li>
+</ol>
+<ul>
+<li>关闭服务器</li>
+</ul>
+<p>在3台主机上关闭防火墙，下面以k8s-1主机为例进行讲解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# systemctl disable firewalld.service</div><div class="line">[root@k8s-1 ~]# systemctl stop firewalld.service</div><div class="line">[root@k8s-1 ~]# systemctl status firewalld.service</div></pre></td></tr></table></figure>
+<ul>
+<li>禁用SELinux</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">vi /etc/selinux/config</div><div class="line">SELINUX=disabled</div></pre></td></tr></table></figure>
+<p>之后重启机器使设置生效。</p>
+<ol>
+<li>Etcd安装和配置<blockquote>
+<p>以下操作在3台主机上均进行，以k8s-1主机为例进行讲解</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>安装</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# yum -y install etcd.x86_64</div></pre></td></tr></table></figure>
+<ul>
+<li>配置</li>
+</ul>
+<p>修改/etc/etcd/etcd.conf配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# cp /etc/etcd/etcd.conf /etc/etcd/etcd.conf.bak</div><div class="line">[root@k8s-1 ~]# sed -i &quot;s#ETCD_NAME=default#ETCD_NAME=`hostname`#g&quot; /etc/etcd/etcd.conf</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s@#ETCD_LISTEN_PEER_URLS=&quot;http://localhost:2380&quot;@ETCD_LISTEN_PEER_URLS=&quot;http://0.0.0.0:2380&quot;@g&apos; /etc/etcd/etcd.conf</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s@ETCD_LISTEN_CLIENT_URLS=&quot;http://localhost:2379&quot;@ETCD_LISTEN_CLIENT_URLS=&quot;http://0.0.0.0:2379&quot;@g&apos; /etc/etcd/etcd.conf</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s@#ETCD_INITIAL_ADVERTISE_PEER_URLS=&quot;http://localhost:2380&quot;@ETCD_INITIAL_ADVERTISE_PEER_URLS=&quot;http://0.0.0.0:2380&quot;@g&apos; /etc/etcd/etcd.conf</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s@#ETCD_INITIAL_CLUSTER=&quot;default=http://localhost:2380&quot;@ETCD_INITIAL_CLUSTER=&quot;k8s-1=http://192.168.111.6:2380,k8s-2=http://192.168.111.7:2380,k8s-3=http://192.168.111.8:2380&quot;@g&apos; /etc/etcd/etcd.conf</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s@ETCD_ADVERTISE_CLIENT_URLS=&quot;http://localhost:2379&quot;@ETCD_ADVERTISE_CLIENT_URLS=&quot;http://0.0.0.0:2379&quot;@g&apos; /etc/etcd/etcd.conf</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# systemctl daemon-reload</div><div class="line">[root@k8s-1 ~]# systemctl enable etcd.service</div><div class="line">[root@k8s-1 ~]# systemctl restart etcd.service</div><div class="line">[root@k8s-1 ~]# systemctl status etcd.service</div></pre></td></tr></table></figure>
+</li>
+<li><p>测试</p>
+<blockquote>
+<p>以下操作在3台主机的任意一台上执行即可，以k8s-1主机为例进行讲解</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# etcdctl cluster-health</div></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<ol>
+<li>kubernetes master安装和配置<blockquote>
+<p>以下操作只在k8s-1主机上进行</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# yum -y install kubernetes-master.x86_64</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# HOST_IP=`ip addr show ens33 | grep -w &apos;inet&apos; | awk -F &quot; &quot; &apos;&#123;print $2&#125;&apos; | awk -F &quot;/&quot; &apos;&#123;print $1&#125;&apos;`</div><div class="line">[root@k8s-1 ~]# ETCD_SERVERS=&apos;http://192.168.111.6:2379,192.168.111.7:2379,192.168.111.8:2379&apos;</div><div class="line"></div><div class="line">[root@k8s-1 ~]# sed -i &quot;s#KUBE_MASTER=\&quot;--master=http://127.0.0.1:8080\&quot;#KUBE_MASTER=\&quot;--master=http://$&#123;HOST_IP&#125;:8080\&quot;#g&quot; /etc/kubernetes/config</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s#KUBE_API_ADDRESS=&quot;--insecure-bind-address=127.0.0.1&quot;#KUBE_API_ADDRESS=&quot;--address=0.0.0.0&quot;#g&apos; /etc/kubernetes/apiserver</div><div class="line">[root@k8s-1 ~]# sed -i &quot;s#KUBE_ETCD_SERVERS=\&quot;--etcd-servers=http://127.0.0.1:2379\&quot;#KUBE_ETCD_SERVERS=\&quot;--etcd-servers=$&#123;ETCD_SERVERS&#125;\&quot;#g&quot; /etc/kubernetes/apiserver</div><div class="line">[root@k8s-1 ~]# sed -i &apos;s#KUBE_ADMISSION_CONTROL=&quot;--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota&quot;#KUBE_ADMISSION_CONTROL=&quot;--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota&quot;#g&apos; /etc/kubernetes/apiserver</div></pre></td></tr></table></figure>
+<ul>
+<li>启动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# vi master_service.sh</div><div class="line">for SERVICE in kube-apiserver kube-controller-manager kube-scheduler</div><div class="line">do</div><div class="line">  systemctl enable $&#123;SERVICE&#125;.service</div><div class="line">  systemctl restart $&#123;SERVICE&#125;.service</div><div class="line">  systemctl status $&#123;SERVICE&#125;.service</div><div class="line">done</div></pre></td></tr></table></figure>
+<ul>
+<li>测试</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# curl http://192.168.111.6:8080</div><div class="line">&#123;</div><div class="line">  &quot;paths&quot;: [</div><div class="line">    &quot;/api&quot;,</div><div class="line">    &quot;/api/v1&quot;,</div><div class="line">    &quot;/apis&quot;,</div><div class="line">    &quot;/apis/apps&quot;,</div><div class="line">    &quot;/apis/apps/v1beta1&quot;,</div><div class="line">    &quot;/apis/authentication.k8s.io&quot;,</div><div class="line">    &quot;/apis/authentication.k8s.io/v1beta1&quot;,</div><div class="line">    &quot;/apis/authorization.k8s.io&quot;,</div><div class="line">    &quot;/apis/authorization.k8s.io/v1beta1&quot;,</div><div class="line">    &quot;/apis/autoscaling&quot;,</div><div class="line">    &quot;/apis/autoscaling/v1&quot;,</div><div class="line">    &quot;/apis/batch&quot;,</div><div class="line">    &quot;/apis/batch/v1&quot;,</div><div class="line">    &quot;/apis/batch/v2alpha1&quot;,</div><div class="line">    &quot;/apis/certificates.k8s.io&quot;,</div><div class="line">    &quot;/apis/certificates.k8s.io/v1alpha1&quot;,</div><div class="line">    &quot;/apis/extensions&quot;,</div><div class="line">    &quot;/apis/extensions/v1beta1&quot;,</div><div class="line">    &quot;/apis/policy&quot;,</div><div class="line">    &quot;/apis/policy/v1beta1&quot;,</div><div class="line">    &quot;/apis/rbac.authorization.k8s.io&quot;,</div><div class="line">    &quot;/apis/rbac.authorization.k8s.io/v1alpha1&quot;,</div><div class="line">    &quot;/apis/storage.k8s.io&quot;,</div><div class="line">    &quot;/apis/storage.k8s.io/v1beta1&quot;,</div><div class="line">    &quot;/healthz&quot;,</div><div class="line">    &quot;/healthz/ping&quot;,</div><div class="line">    &quot;/healthz/poststarthook/bootstrap-controller&quot;,</div><div class="line">    &quot;/healthz/poststarthook/extensions/third-party-resources&quot;,</div><div class="line">    &quot;/healthz/poststarthook/rbac/bootstrap-roles&quot;,</div><div class="line">    &quot;/logs&quot;,</div><div class="line">    &quot;/metrics&quot;,</div><div class="line">    &quot;/swaggerapi/&quot;,</div><div class="line">    &quot;/ui/&quot;,</div><div class="line">    &quot;/version&quot;</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>kubernetes node安装和配置<blockquote>
+<p>以下操作在k8s-2和k8s-3两台主机上均执行，此处以k8s-2主机为例进行讲解</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>安装</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# yum -y install kubernetes-node.x86_64</div></pre></td></tr></table></figure>
+<ul>
+<li>配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# KUBE_MASTER=&apos;192.168.111.6&apos;</div><div class="line"></div><div class="line">[root@k8s-2 ~]# sed -i &quot;s#KUBE_MASTER=\&quot;--master=http://127.0.0.1:8080\&quot;#KUBE_MASTER=\&quot;--master=http://$&#123;KUBE_MASTER&#125;:8080\&quot;#g&quot; /etc/kubernetes/config</div><div class="line">[root@k8s-2 ~]# sed -i &apos;s#KUBELET_ADDRESS=&quot;--address=127.0.0.1&quot;#KUBELET_ADDRESS=&quot;--address=0.0.0.0&quot;#g&apos; /etc/kubernetes/kubelet</div><div class="line">[root@k8s-2 ~]# sed -i &quot;s#KUBELET_HOSTNAME=\&quot;--hostname-override=127.0.0.1\&quot;#KUBELET_HOSTNAME=\&quot;--hostname-override=`hostname`\&quot;#g&quot; /etc/kubernetes/kubelet</div><div class="line">[root@k8s-2 ~]# sed -i &quot;s#KUBELET_API_SERVER=\&quot;--api-servers=http://127.0.0.1:8080\&quot;#KUBELET_API_SERVER=\&quot;--api-servers=http://$&#123;KUBE_MASTER&#125;:8080\&quot;#g&quot; /etc/kubernetes/kubelet</div></pre></td></tr></table></figure>
+<ul>
+<li>启动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# vi node_service.sh</div><div class="line">for SERVICE in docker kube-proxy kubelet</div><div class="line">do</div><div class="line">  systemctl enable $&#123;SERVICE&#125;.service</div><div class="line">  systemctl restart $&#123;SERVICE&#125;.service</div><div class="line">  systemctl status $&#123;SERVICE&#125;.service</div><div class="line">done</div></pre></td></tr></table></figure>
+<ul>
+<li>验证<blockquote>
+<p>以下操作在master节点k8s-1上执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# kubectl -s http://k8s-1:8080 get node</div><div class="line">NAME      STATUS    AGE</div><div class="line">k8s-2     Ready     2h</div><div class="line">k8s-3     Ready     2h</div><div class="line"></div><div class="line">[root@k8s-1 ~]# kubectl get nodes</div><div class="line">NAME      STATUS    AGE</div><div class="line">k8s-2     Ready     2h</div><div class="line">k8s-3     Ready     2h</div></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<ol>
+<li>flannel安装和配置<blockquote>
+<p>以下操作在k8s-2和k8s-3两台主机上均执行，此处以k8s-2主机为例进行讲解</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# yum -y install flannel.x86_64</div></pre></td></tr></table></figure>
+</li>
+<li><p>配置</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# ETCD_SERVERS=&apos;http://192.168.111.6:2379,192.168.111.7:2379,192.168.111.8:2379&apos;</div><div class="line">[root@k8s-2 ~]# sed -i &quot;s#FLANNEL_ETCD_ENDPOINTS=\&quot;http://127.0.0.1:2379\&quot;#FLANNEL_ETCD_ENDPOINTS=\&quot;$&#123;ETCD_SERVERS&#125;\&quot;#g&quot; /etc/sysconfig/flanneld</div></pre></td></tr></table></figure>
+<p>在k8s-1、在k8s-2和在k8s-3任意一个etcd主机上，执行关于flannel key的配置，此处以k8s-1主机为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# etcdctl mk /atomic.io/network/config &apos;&#123; &quot;Network&quot;: &quot;172.17.0.0/16&quot; &#125;&apos;</div></pre></td></tr></table></figure>
+<ul>
+<li>启动</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# systemctl enable flanneld.service</div><div class="line">[root@k8s-2 ~]# systemctl restart flanneld.service</div></pre></td></tr></table></figure>
+<ol>
+<li>服务发布测试</li>
+</ol>
+<ul>
+<li>镜像拉取<blockquote>
+<p>在k8s-2和k8s-3两个node主机上，从163拉取nginx镜像，此处以k8s-2主机为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@k8s-2 ~]# docker pull hub.c.163.com/library/nginx:latest</div></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>服务发布测试在k8s-1对应的master节点进行</p>
+</blockquote>
+<ul>
+<li><p>创建pod</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# vi nginx-pod.yaml</div><div class="line">apiVersion: v1</div><div class="line">kind: Pod</div><div class="line">metadata:</div><div class="line"> name: nginx-pod</div><div class="line"> labels:</div><div class="line">  name: nginx-pod</div><div class="line">spec:</div><div class="line"> containers:</div><div class="line"> - name: nginx</div><div class="line">   image: hub.c.163.com/library/nginx:latest</div><div class="line">   ports:</div><div class="line">   - containerPort: 80</div><div class="line">   </div><div class="line">[root@k8s-1 ~]# kubectl create -f nginx-pod.yaml</div></pre></td></tr></table></figure>
+</li>
+<li><p>查看pod状态</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# kubectl get pods</div><div class="line">NAME        READY     STATUS              RESTARTS   AGE</div><div class="line">nginx-pod   0/1       ContainerCreating   0          2s</div><div class="line">[root@k8s-1 ~]# kubectl get pods</div><div class="line">NAME        READY     STATUS    RESTARTS   AGE</div><div class="line">nginx-pod   1/1       Running   0          4m</div></pre></td></tr></table></figure>
+<ul>
+<li>创建rc</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">vi nginx-rc.yaml</div><div class="line">apiVersion: v1</div><div class="line">kind: ReplicationController</div><div class="line">metadata:</div><div class="line"> name: nginx-rc</div><div class="line">spec:</div><div class="line"> replicas: 1</div><div class="line"> selector:</div><div class="line">  name: nginx-pod</div><div class="line"> template:</div><div class="line">  metadata:</div><div class="line">   labels:</div><div class="line">    name: nginx-pod</div><div class="line">  spec:</div><div class="line">   containers:</div><div class="line">   - name: nginx-pod</div><div class="line">     image: hub.c.163.com/library/nginx:latest</div><div class="line">     ports:</div><div class="line">     - containerPort: 80</div><div class="line"></div><div class="line">[root@k8s-1 ~]# kubectl create -f nginx-rc.yaml</div></pre></td></tr></table></figure>
+<ul>
+<li>查看rc状态</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# kubectl get rc</div><div class="line">NAME       DESIRED   CURRENT   READY     AGE</div><div class="line">nginx-rc   1         1         1         32s</div></pre></td></tr></table></figure>
+<ul>
+<li>创建service</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">vi nginx-service.yaml</div><div class="line">apiVersion: v1</div><div class="line">kind: Service</div><div class="line">metadata:</div><div class="line"> name: nginx-service</div><div class="line">spec:</div><div class="line"> type: NodePort</div><div class="line"> ports:</div><div class="line"> - port: 80</div><div class="line">   nodePort: 30001</div><div class="line"> selector:</div><div class="line">  name: nginx-pod</div><div class="line">  </div><div class="line">[root@k8s-1 ~]# kubectl create -f nginx-service.yaml</div></pre></td></tr></table></figure>
+<ul>
+<li>查看service状态</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[root@k8s-1 ~]# kubectl get service</div><div class="line">NAME            CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</div><div class="line">kubernetes      10.254.0.1     &lt;none&gt;        443/TCP        14h</div><div class="line">nginx-service   10.254.80.12   &lt;nodes&gt;       80:30001/TCP   5s</div></pre></td></tr></table></figure>
+<ul>
+<li>测试发布的nginx服务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">http://192.168.111.7:30001</div><div class="line">http://192.168.111.8:30001</div></pre></td></tr></table></figure>
+<ol>
+<li>参考</li>
+</ol>
+<p><a href="http://www.cnblogs.com/zhenyuyaodidiao/p/6500830.html" target="_blank" rel="external">http://www.cnblogs.com/zhenyuyaodidiao/p/6500830.html</a><br><a href="http://blog.csdn.net/u013760355/article/details/68061976" target="_blank" rel="external">http://blog.csdn.net/u013760355/article/details/68061976</a></p>
 
       
 
@@ -188,7 +347,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/08/19/hello-world/">展开全文 >></a>
+          <a class="article-more-a" href="/2017/08/19/Kubernetes/">展开全文 >></a>
         </p>
       
 
