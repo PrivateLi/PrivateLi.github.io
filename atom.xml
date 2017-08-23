@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-08-21T00:44:18.343Z</updated>
+  <updated>2017-08-23T10:57:03.108Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>my first post</title>
+    <link href="http://yoursite.com/2017/08/23/test/"/>
+    <id>http://yoursite.com/2017/08/23/test/</id>
+    <published>2017-08-23T10:56:27.000Z</published>
+    <updated>2017-08-23T10:57:03.108Z</updated>
+    
+    <content type="html"><![CDATA[<p>this is a hexo test</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;this is a hexo test&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="blog" scheme="http://yoursite.com/categories/blog/"/>
+    
+    
+      <category term="etcd" scheme="http://yoursite.com/tags/etcd/"/>
+    
+  </entry>
   
   <entry>
     <title>Etcd安装部署</title>
