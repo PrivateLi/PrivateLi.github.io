@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-08-23T10:57:03.108Z</updated>
+  <updated>2017-08-25T11:27:53.529Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,26 +16,66 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>my first post</title>
-    <link href="http://yoursite.com/2017/08/23/test/"/>
-    <id>http://yoursite.com/2017/08/23/test/</id>
-    <published>2017-08-23T10:56:27.000Z</published>
-    <updated>2017-08-23T10:57:03.108Z</updated>
+    <title>如何在Windows环境下访问启用了Kerberos的HDP集群</title>
+    <link href="http://yoursite.com/2017/08/25/Windows%20Kerberos/"/>
+    <id>http://yoursite.com/2017/08/25/Windows Kerberos/</id>
+    <published>2017-08-25T11:25:27.000Z</published>
+    <updated>2017-08-25T11:27:53.529Z</updated>
     
-    <content type="html"><![CDATA[<p>this is a hexo test</p>
+    <content type="html"><![CDATA[<blockquote>
+<p>该文档以Win 10操作系统为例</p>
+</blockquote>
+<h3 id="安装MIT-Kerberos"><a href="#安装MIT-Kerberos" class="headerlink" title="安装MIT Kerberos"></a>安装MIT Kerberos</h3><p>下载MIT Kerberos：</p>
+<ul>
+<li>适合64位安装操作系统</li>
+</ul>
+<p><a href="http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi" target="_blank" rel="external">http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi</a></p>
+<ul>
+<li>适合32位操作系统</li>
+</ul>
+<p><a href="http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi" target="_blank" rel="external">http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi</a></p>
+<p>MIT Kerberos软件的安装按照向导一步步操作即可，在此不再一一赘述。其安装目录默认为“C:\Program Files\MIT\Kerberos”。</p>
+<p>从HDP KDC Server节点的/etc目录下拷贝krb5.conf文件MIT Kerberos软件的安装目录，将krb5.conf改名为krb5.ini。</p>
+<h3 id="配置MIT-Kerberos环境变量"><a href="#配置MIT-Kerberos环境变量" class="headerlink" title="配置MIT Kerberos环境变量"></a>配置MIT Kerberos环境变量</h3><p>配置如下环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">变量名：KRB5_CONFIG</div><div class="line">变量值：C:\ProgramData\Kerberos\krb5.ini</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注：环境变量KRB5_CONFIG的变量值为krb5.ini文件存放路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">变量名：KRB5CCNAME</div><div class="line">变量值：D:\tmp\krb5cc_0</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注：环境变量KRB5CCNAME的变量值为HDP集群中某个用户或大数据服务对应用户的票据缓存文件存放路径。在Windows操作系统下创建目录，用来存放从HDP集群中拷贝的票据缓存文件，此处目录为D:\tmp。</p>
+</blockquote>
+<p>票据缓存文件获取实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@idap-server-58 ~]# kinit -kt /etc/security/keytabs/superadmin.keytab superadmin@IDAP.COM</div><div class="line">[root@idap-server-58 ~]# klist</div><div class="line">Ticket cache: FILE:/tmp/krb5cc_0 （注：该文件便是要拷贝至Windows环境的用户票据缓存文件存放路径）</div><div class="line">Default principal: superadmin@IDAP.COM</div><div class="line"></div><div class="line">Valid starting       Expires              Service principal</div><div class="line">08/25/2017 18:53:53  08/26/2017 18:53:53  krbtgt/IDAP.COM@IDAP.COM</div><div class="line">	renew until 09/01/2017 18:53:53</div></pre></td></tr></table></figure></p>
+<h3 id="安装Firefox浏览器"><a href="#安装Firefox浏览器" class="headerlink" title="安装Firefox浏览器"></a>安装Firefox浏览器</h3><p>下载Firefox浏览器，下载地址为：<br><a href="https://www.mozilla.org/en-US/firefox/new" target="_blank" rel="external">https://www.mozilla.org/en-US/firefox/new</a></p>
+<p>MIT Kerberos软件的安装按照向导一步步操作即可，在此不再一一赘述。</p>
+<h3 id="在Firefox浏览器上启用MIT-Kerberos"><a href="#在Firefox浏览器上启用MIT-Kerberos" class="headerlink" title="在Firefox浏览器上启用MIT Kerberos"></a>在Firefox浏览器上启用MIT Kerberos</h3><p>启动Firefox浏览器，在地址栏中输入“about:config”，查找如下参数进行修改：</p>
+<ul>
+<li>network.negotiate-auth.trusted-uris = .domain.com</li>
+<li>network.negotiate-auth.using-native-gsslib = false</li>
+<li>network.negotiate-auth.gsslib = C:\Program Files\MIT\Kerberos\bin\gssapi32.dll</li>
+<li>network.auth.use-sspi = false</li>
+<li>network.negotiate-auth.allow-non-fqdn = true<blockquote>
+<p>注：network.negotiate-auth.trusted-uris的值根据具体的Kerberos Relam设置；network.negotiate-auth.gsslib的值根据具体的gssapi32.dll文件存放路径设置。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="利用MIT-Kerberos获取Kerberos票据"><a href="#利用MIT-Kerberos获取Kerberos票据" class="headerlink" title="利用MIT Kerberos获取Kerberos票据"></a>利用MIT Kerberos获取Kerberos票据</h3><p>启动MIT Kerberos，点击“Home→Get Ticket”,输入MIT Kerberos环境变量配置中所使用的Kerberos用户对应的Principal及其密码</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>经过如上步骤，启动Firefox浏览器，便可以正常访问启用了Kerberos的HDP集群。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;p&gt;this is a hexo test&lt;/p&gt;
-
+      &lt;blockquote&gt;
+&lt;p&gt;该文档以Win 10操作系统为例&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;安装MIT-Kerberos&quot;&gt;&lt;a href=&quot;#安装MIT-Kerberos&quot; class=&quot;headerlink&quot; title=&quot;安装MIT Kerbero
     
     </summary>
     
       <category term="blog" scheme="http://yoursite.com/categories/blog/"/>
     
     
-      <category term="etcd" scheme="http://yoursite.com/tags/etcd/"/>
+      <category term="Kerberos" scheme="http://yoursite.com/tags/Kerberos/"/>
     
   </entry>
   

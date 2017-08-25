@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2017/8 | Private&#39;s blog</title>
+  <title>如何在Windows环境下访问启用了Kerberos的HDP集群 | Private&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="hard work is for a better life">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Private&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/archives/2017/08/index.html">
+  <meta name="description" content="该文档以Win 10操作系统为例  安装MIT Kerberos下载MIT Kerberos：  适合64位安装操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi  适合32位操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi MIT Kerb">
+<meta name="keywords" content="Kerberos">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何在Windows环境下访问启用了Kerberos的HDP集群">
+<meta property="og:url" content="http://yoursite.com/2017/08/25/Windows Kerberos/index.html">
 <meta property="og:site_name" content="Private&#39;s blog">
-<meta property="og:description" content="hard work is for a better life">
+<meta property="og:description" content="该文档以Win 10操作系统为例  安装MIT Kerberos下载MIT Kerberos：  适合64位安装操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi  适合32位操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi MIT Kerb">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-25T11:27:53.529Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Private&#39;s blog">
-<meta name="twitter:description" content="hard work is for a better life">
+<meta name="twitter:title" content="如何在Windows环境下访问启用了Kerberos的HDP集群">
+<meta name="twitter:description" content="该文档以Win 10操作系统为例  安装MIT Kerberos下载MIT Kerberos：  适合64位安装操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi  适合32位操作系统  http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi MIT Kerb">
   
     <link rel="alternative" href="/atom.xml" title="Private&#39;s blog" type="application/atom+xml">
   
@@ -153,36 +155,94 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Windows Kerberos" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/08/25/Windows Kerberos/" class="archive-article-date">
-  	<time datetime="2017-08-25T11:25:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-25</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/08/25/Windows Kerberos/">如何在Windows环境下访问启用了Kerberos的HDP集群</a>
+    <h1 class="article-title" itemprop="name">
+      如何在Windows环境下访问启用了Kerberos的HDP集群
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/08/25/Windows Kerberos/" class="archive-article-date">
+  	<time datetime="2017-08-25T11:25:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>该文档以Win 10操作系统为例</p>
+</blockquote>
+<h3 id="安装MIT-Kerberos"><a href="#安装MIT-Kerberos" class="headerlink" title="安装MIT Kerberos"></a>安装MIT Kerberos</h3><p>下载MIT Kerberos：</p>
+<ul>
+<li>适合64位安装操作系统</li>
+</ul>
+<p><a href="http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi" target="_blank" rel="external">http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-amd64.msi</a></p>
+<ul>
+<li>适合32位操作系统</li>
+</ul>
+<p><a href="http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi" target="_blank" rel="external">http://web.mit.edu/kerberos/dist/kfw/4.1/kfw-4.1-i386.msi</a></p>
+<p>MIT Kerberos软件的安装按照向导一步步操作即可，在此不再一一赘述。其安装目录默认为“C:\Program Files\MIT\Kerberos”。</p>
+<p>从HDP KDC Server节点的/etc目录下拷贝krb5.conf文件MIT Kerberos软件的安装目录，将krb5.conf改名为krb5.ini。</p>
+<h3 id="配置MIT-Kerberos环境变量"><a href="#配置MIT-Kerberos环境变量" class="headerlink" title="配置MIT Kerberos环境变量"></a>配置MIT Kerberos环境变量</h3><p>配置如下环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">变量名：KRB5_CONFIG</div><div class="line">变量值：C:\ProgramData\Kerberos\krb5.ini</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注：环境变量KRB5_CONFIG的变量值为krb5.ini文件存放路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">变量名：KRB5CCNAME</div><div class="line">变量值：D:\tmp\krb5cc_0</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注：环境变量KRB5CCNAME的变量值为HDP集群中某个用户或大数据服务对应用户的票据缓存文件存放路径。在Windows操作系统下创建目录，用来存放从HDP集群中拷贝的票据缓存文件，此处目录为D:\tmp。</p>
+</blockquote>
+<p>票据缓存文件获取实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">[root@idap-server-58 ~]# kinit -kt /etc/security/keytabs/superadmin.keytab superadmin@IDAP.COM</div><div class="line">[root@idap-server-58 ~]# klist</div><div class="line">Ticket cache: FILE:/tmp/krb5cc_0 （注：该文件便是要拷贝至Windows环境的用户票据缓存文件存放路径）</div><div class="line">Default principal: superadmin@IDAP.COM</div><div class="line"></div><div class="line">Valid starting       Expires              Service principal</div><div class="line">08/25/2017 18:53:53  08/26/2017 18:53:53  krbtgt/IDAP.COM@IDAP.COM</div><div class="line">	renew until 09/01/2017 18:53:53</div></pre></td></tr></table></figure></p>
+<h3 id="安装Firefox浏览器"><a href="#安装Firefox浏览器" class="headerlink" title="安装Firefox浏览器"></a>安装Firefox浏览器</h3><p>下载Firefox浏览器，下载地址为：<br><a href="https://www.mozilla.org/en-US/firefox/new" target="_blank" rel="external">https://www.mozilla.org/en-US/firefox/new</a></p>
+<p>MIT Kerberos软件的安装按照向导一步步操作即可，在此不再一一赘述。</p>
+<h3 id="在Firefox浏览器上启用MIT-Kerberos"><a href="#在Firefox浏览器上启用MIT-Kerberos" class="headerlink" title="在Firefox浏览器上启用MIT Kerberos"></a>在Firefox浏览器上启用MIT Kerberos</h3><p>启动Firefox浏览器，在地址栏中输入“about:config”，查找如下参数进行修改：</p>
+<ul>
+<li>network.negotiate-auth.trusted-uris = .domain.com</li>
+<li>network.negotiate-auth.using-native-gsslib = false</li>
+<li>network.negotiate-auth.gsslib = C:\Program Files\MIT\Kerberos\bin\gssapi32.dll</li>
+<li>network.auth.use-sspi = false</li>
+<li>network.negotiate-auth.allow-non-fqdn = true<blockquote>
+<p>注：network.negotiate-auth.trusted-uris的值根据具体的Kerberos Relam设置；network.negotiate-auth.gsslib的值根据具体的gssapi32.dll文件存放路径设置。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="利用MIT-Kerberos获取Kerberos票据"><a href="#利用MIT-Kerberos获取Kerberos票据" class="headerlink" title="利用MIT Kerberos获取Kerberos票据"></a>利用MIT Kerberos获取Kerberos票据</h3><p>启动MIT Kerberos，点击“Home→Get Ticket”,输入MIT Kerberos环境变量配置中所使用的Kerberos用户对应的Principal及其密码</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>经过如上步骤，启动Firefox浏览器，便可以正常访问启用了Kerberos的HDP集群。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -194,7 +254,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -207,108 +267,102 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/08/25/Windows Kerberos/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/08/21/my-new-post/" class="archive-article-date">
-  	<time datetime="2017-08-21T00:30:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-21</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2017/08/21/my-new-post/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Etcd安装部署</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/08/21/my-new-post/">Etcd安装部署</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">etcd</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/blog/" class="article-tag-list-link color5">blog</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/08/19/Etcd安装部署/" class="archive-article-date">
-  	<time datetime="2017-08-19T15:26:28.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-19</time>
-</a>
-        </div>
-    	 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/08/19/Kubernetes/" class="archive-article-date">
-  	<time datetime="2017-08-19T15:23:20.171Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-08-19</time>
-</a>
-        </div>
-    	 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -331,8 +385,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
